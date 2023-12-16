@@ -41,3 +41,7 @@ class Cashier(threading.Thread):
         #table_number = input("What's your table number?\n")
         #time.sleep(0.5)
         print("Payment will starts")
+
+class Table():
+    def __init__(self):
+        super().__init__()

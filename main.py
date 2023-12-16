@@ -41,6 +41,13 @@ def main():
     for customer in customers:
         print(f"Customer ID: {customer.id} and Customer Priority: {customer.priority}")
 
+    for customer in customers:
+        print(f"Take Customer ID: {customer.id}")
+        customer.start()
+        customers.remove(customer)
+
+    print(len(customers))
+
 
 if __name__ == "__main__":
     main()
