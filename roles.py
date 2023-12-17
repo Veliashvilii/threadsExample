@@ -47,3 +47,12 @@ class Table():
         super().__init__()
         self.id = id
         self.isAvailable = True #Masanın dolu olup olmadığını kontrol etmek adına kullanılıyor.
+        self.customer = None # Masadaki müşterinin takibi için
+
+    def freeTable(self):
+        self.isAvailable = True
+        self.customer = None
+
+    def seatTable(self, customer):
+        self.isAvailable = False
+        self.customer = customer

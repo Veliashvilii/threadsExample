@@ -1,5 +1,5 @@
 from roles import Waiter, Cashier, Chef, Customer, Table
-import threading, time, random
+import threading, time, random, queue
 
 def createCustomer():
     # Bu method ile gelen müşterilerin gelmesi sağlanıyor ve öncelik sıralamsına göre sıraya sokuluyorlar.
@@ -51,6 +51,12 @@ def createTable(length):
         tables.append(table)
     return tables
 
+def customer_activity(customer, table):
+    print(f"Customer {customer.id} is seated at Table {table.id}.")
+    time.sleep(3)  # Müşteri belirli bir süre oturuyor
+    table.freeTable()
+    print(f"Customer {customer.id} left Table {table.id}.")
+
 
 def main():
     # Başlangıçtaki restoran özelliklerinin belirlenmesi
@@ -66,11 +72,58 @@ def main():
     for table in tables:
         print(f"Table ID: {table.id} and Table is Available: {table.isAvailable}")
 
-    print("!Change Available situation!")
-    for table in tables:
-        if table.id == 4:
-            table.isAvailable = False
-        print(f"Table ID: {table.id} and Table is Available: {table.isAvailable}")
+   # print("!Change Available situation!")
+   # for table in tables:
+   #     if table.id == 4:
+   #         table.isAvailable = False
+   #     print(f"Table ID: {table.id} and Table is Available: {table.isAvailable}")
+
+
+    # Gelen birinci müşteri dalgasını masalara yerleştiren bir simülasyon gerçekleştiriyor.
+    """ customers_line = queue.Queue()
+    for customer in customers:
+        customers_line.put(customer)
+
+    while not customers_line.empty():
+        customer = customers_line.get()
+        available_table = None
+        for table in tables:
+            if table.isAvailable:
+                available_table = table
+                break
+        
+        if available_table:
+            available_table.isAvailable = False
+            customer.start()
+            print(f"Customer ID: {customer.id}, Available Table ID: {available_table.id} seated.")
+        else:
+            print(f"Available Table None, please wait!")
+    """
+
+    customers_line = queue.Queue()
+    while True:
+        customers = createCustomer()
+        for customer in customers:
+            customers_line.put(customer)
+
+        while not customers_line.empty():
+            customer = customers_line.get()
+
+            # Müşteriye uygun masa bul
+            available_table = None
+            for table in tables:
+                if table.isAvailable:
+                    available_table = table
+                    break
+
+            if available_table:
+                available_table.isAvailable = False
+                available_table.customer = customer
+                threading.Thread(target=customer_activity, args=(customer, available_table)).start()
+            else:
+                print(f"Müsait masa yok for Müşteri {customer.id}.")
+
+        time.sleep(5)  # Belirli bir süre sonra yeni müşterilerin gelmesini bekle
 
     # aktif sıra dizisi tutmak mantıklı olabilir. Çünkü örneğin masalar dolu olunca bu sefer 
     # gelen kişileri silmek yerine sırada olduklarını bu şekilde takip edebiliriz.
