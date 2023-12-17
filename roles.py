@@ -6,7 +6,7 @@ class Customer(threading.Thread):
         super().__init__()
         self.id = id
         self.priority = priority
-
+ 
     def run(self):
         # Müşteri işlemleri
         print(f"Customer {self.id} is seated.")

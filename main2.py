@@ -57,6 +57,11 @@ def customer_activity(customer, table):
     table.freeTable()
     print(f"Customer {customer.id} left Table {table.id}.")
 
+def makeLinePriority(oldLine, newLine):
+    result = list(zip(oldLine, newLine))
+    result.sort(key=lambda x: x.priority, reverse=True)
+    return result
+
 
 def main():
     # Başlangıçtaki restoran özelliklerinin belirlenmesi
@@ -65,9 +70,11 @@ def main():
     cashiers = createCashier(1)
     tables = createTable(6) # Masaların tam olarak nasıl tasarlanması ve tanımlanması gerektiğini çözemedim.
 
+    """
     customers = createCustomer()
     for customer in customers:
         print(f"Customer ID: {customer.id} and Customer Priority: {customer.priority}")
+    """
     
     for table in tables:
         print(f"Table ID: {table.id} and Table is Available: {table.isAvailable}")
@@ -101,11 +108,33 @@ def main():
     """
 
     customers_line = queue.Queue()
+    extra_line = []
     while True:
+
+        #Burada aslında eski sıradan kalan kişileri kaybetmemek adına bmyke bir yol izliyorum. Eğer masalar doluysa extra_line içerisine aktarılyıor. Daha sonrasında da bunu biz her seferinde sıraya sokuyoruz.
+        # Şuan için tek bir problem var o da örneğin müşterinin id si 6 olsun. Ve masaya oturamasın. Bu sefer ikinci dalgada yeni bir 6 gelince 2 tane id si 6 olan kullanıcı oluyor. Bunu belki bir global değişken çözümleyebilir.
+
+        # queue_copy kullanıyorum çünkü customers_line için öncelikli sıralama denedim ancak pek başarılı olamadım. Bu şekilde öncelikli olarak sortlayabiliyorum ve daha sonrasında customers_line a aktarıp işlemleri ordan ilerletiyorum. Kodun kompaktlığı açısından o yönteme bir bakılabilir. Kod uzunluğunu azaltacaktır!
+        queue_copy = []
+
+        for oldCustomer in extra_line:
+            queue_copy.append(oldCustomer)
+        
+        #Her döngüde extra_line ın içini boşaltıyoruzki her dönüşümüzde işi biten elemanlar bizi karşılamasın. Bu şekilde her tur ayakta kalanlar bizle olacak.
+        extra_line.clear()
+
         customers = createCustomer()
         for customer in customers:
-            customers_line.put(customer)
+            queue_copy.append(customer)
 
+        queue_copy.sort(key=lambda x: x.priority, reverse=True)
+
+        for customer in queue_copy:
+            print(f"Customer ID: {customer.id} and Customer Priority: {customer.priority}") 
+            customers_line.put(customer) 
+
+        print("------------------------------------------------------")  
+        
         while not customers_line.empty():
             customer = customers_line.get()
 
@@ -117,12 +146,11 @@ def main():
                     break
 
             if available_table:
-                available_table.isAvailable = False
-                available_table.customer = customer
+                available_table.seatTable(customer)
                 threading.Thread(target=customer_activity, args=(customer, available_table)).start()
             else:
                 print(f"Müsait masa yok for Müşteri {customer.id}.")
-
+                extra_line.append(customer)
         time.sleep(5)  # Belirli bir süre sonra yeni müşterilerin gelmesini bekle
 
     # aktif sıra dizisi tutmak mantıklı olabilir. Çünkü örneğin masalar dolu olunca bu sefer 
