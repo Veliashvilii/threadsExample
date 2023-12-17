@@ -43,5 +43,7 @@ class Cashier(threading.Thread):
         print("Payment will starts")
 
 class Table():
-    def __init__(self):
+    def __init__(self, id):
         super().__init__()
+        self.id = id
+        self.isAvailable = True #Masanın dolu olup olmadığını kontrol etmek adına kullanılıyor.

@@ -47,7 +47,7 @@ def createTable(length):
     tables = []
     i = 0
     for i in range(length):
-        table = Table()
+        table = Table(i+1)
         tables.append(table)
     return tables
 
@@ -62,6 +62,15 @@ def main():
     customers = createCustomer()
     for customer in customers:
         print(f"Customer ID: {customer.id} and Customer Priority: {customer.priority}")
+    
+    for table in tables:
+        print(f"Table ID: {table.id} and Table is Available: {table.isAvailable}")
+
+    print("!Change Available situation!")
+    for table in tables:
+        if table.id == 4:
+            table.isAvailable = False
+        print(f"Table ID: {table.id} and Table is Available: {table.isAvailable}")
 
     # aktif sıra dizisi tutmak mantıklı olabilir. Çünkü örneğin masalar dolu olunca bu sefer 
     # gelen kişileri silmek yerine sırada olduklarını bu şekilde takip edebiliriz.
