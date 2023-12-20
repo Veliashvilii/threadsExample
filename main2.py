@@ -1,6 +1,7 @@
 from roles import Waiter, Cashier, Chef, Customer, Table
 import threading, time, random, queue
 
+
 def createCustomer():
     # Bu method ile gelen müşterilerin gelmesi sağlanıyor ve öncelik sıralamsına göre sıraya sokuluyorlar.
     customer_num = random.randint(1, 10)
@@ -107,6 +108,8 @@ def main():
             print(f"Available Table None, please wait!")
     """
 
+
+
     customers_line = queue.Queue()
     extra_line = []
     while True:
@@ -125,6 +128,7 @@ def main():
 
         customers = createCustomer()
         for customer in customers:
+            
             queue_copy.append(customer)
 
         queue_copy.sort(key=lambda x: x.priority, reverse=True)
@@ -152,7 +156,8 @@ def main():
                 print(f"Müsait masa yok for Müşteri {customer.id}.")
                 extra_line.append(customer)
         time.sleep(5)  # Belirli bir süre sonra yeni müşterilerin gelmesini bekle
-
+    
+    
     # aktif sıra dizisi tutmak mantıklı olabilir. Çünkü örneğin masalar dolu olunca bu sefer 
     # gelen kişileri silmek yerine sırada olduklarını bu şekilde takip edebiliriz.
     # Ayrıyeten burada şunu unutmamak gerekli. Örneğin 2. müşteri dalgası gelidiğinde bu sefer
