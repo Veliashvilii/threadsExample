@@ -1,8 +1,7 @@
 import threading
 import time
 import random
-from queue import Queue, Empty, PriorityQueue
-from threading import Semaphore
+from queue import Queue, Empty
 
 class Restaurant:
     def __init__(self, num_tables, num_waiters, num_chefs, num_cashiers):
@@ -10,32 +9,20 @@ class Restaurant:
         self.waiters = [Waiter(f'Waiter-{i}') for i in range(num_waiters)]
         self.chefs = [Chef(f'Chef-{i}') for i in range(num_chefs)]
         self.cashier = Cashier('Cashier')
-        self.customer_queue = Queue()  # PriorityQueue kullanarak öncelik kuyruğu oluşturuyoruz
+        self.customer_queue = Queue()
 
     def start_simulation(self):
-        while True:    
-            customers = []
+        while True:
             num_customers = random.randint(1, 10)
-            for i in range(num_customers):
-                customer = Customer(f"Customer-{i+1}", self, random.randint(0, 1))
-                customers.append(customer)
-
-            customers.sort(key=lambda x: x.priority, reverse=True)
-
+            customers = [Customer(f'Customer-{i}', self) for i in range(num_customers)]
+            
             for customer in customers:
-                self.customer_queue.put(customer)
-
-            while not self.customer_queue.empty():
-                customer = self.customer_queue.get()
                 customer.start()
+                time.sleep(2)  # Simulate delay between customers
+                #random.uniform(0.1, 0.5)
 
             for customer in customers:
                 customer.join()
-            
-            print("--------------------------------")
-
-
-            time.sleep(2)
 
 class Semaphore:
     def __init__(self, initial):
@@ -64,20 +51,17 @@ class Semaphore:
         self.mutex.release()
 
 class Customer(threading.Thread):
-    def __init__(self, name, restaurant, priority):
+    def __init__(self, name, restaurant):
         super().__init__(name=name)
         self.restaurant = restaurant
-        self.priority = priority
 
     def run(self):
         time.sleep(3)  # Simulate customer arriving at random time
         #random.uniform(0, 1)
-        #priority = random.randint(0, 1)
-        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-        print(f"{self.name} entered the restaurant with priority {self.priority}.")
-        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        priority = random.randint(0, 1)
+        print(f"{self.name} entered the restaurant with priority {priority}.")
         
-        self.restaurant.customer_queue.put(self.name)
+        self.restaurant.customer_queue.put((priority, self.name))
         self.restaurant.tables.wait()  # Wait for an available table
         waiter = random.choice(self.restaurant.waiters)
         waiter.take_order(self.name)
