@@ -18,7 +18,8 @@ class Restaurant:
             
             for customer in customers:
                 customer.start()
-                time.sleep(random.uniform(0.1, 0.5))  # Simulate delay between customers
+                time.sleep(2)  # Simulate delay between customers
+                #random.uniform(0.1, 0.5)
 
             for customer in customers:
                 customer.join()
@@ -55,7 +56,8 @@ class Customer(threading.Thread):
         self.restaurant = restaurant
 
     def run(self):
-        time.sleep(random.uniform(0, 1))  # Simulate customer arriving at random time
+        time.sleep(3)  # Simulate customer arriving at random time
+        #random.uniform(0, 1)
         priority = random.randint(0, 1)
         print(f"{self.name} entered the restaurant with priority {priority}.")
         
@@ -92,7 +94,8 @@ class Cashier(threading.Thread):
 
     def receive_payment(self, customer_name):
         print(f"{self.name} received payment from {customer_name}.")
-        time.sleep(random.uniform(0.5, 1))  # Simulate payment processing time
+        time.sleep(3)  # Simulate payment processing time
+        #random.uniform(0.5, 1)
 
 if __name__ == "__main__":
     restaurant = Restaurant(num_tables=6, num_waiters=3, num_chefs=2, num_cashiers=1)
