@@ -146,7 +146,8 @@ class Customer(threading.Thread):
           #waiter.take_order(self.id)
           self.restaurant.tables.signal()
             # Müşteri yemek yedikten sonra masayı boşalt
-          time.sleep(random.uniform(0.1, 0.5))
+          time.sleep(3)
+          #random.uniform(0.1, 0.5)
           print(f"Customer-{self.id} left Table-{self.table_number}")
             # Boşalan masayı tekrar kullanıma aç
           self.restaurant.available_tables.append(self.table_number)
@@ -160,6 +161,7 @@ class Waiter(threading.Thread):
 
   def take_order(self, customer_id):
         print(f"Waiter-{self.id} took order from Customer-{customer_id}.")
+        time.sleep(2) # Sipariş Alma Süresi
         chef = random.choice(restaurant.chefs)
         chef_thread = threading.Thread(target=chef.run(customer_id))
         chef_thread.start()
@@ -172,7 +174,8 @@ class Chef(threading.Thread):
 
     def run(self, customer_id):
         print(f"Chef-{self.id} is preparing the order for Customer-{customer_id}.")
-        time.sleep(random.uniform(1, 2)) #Yemeğin Pişme Süresi
+        time.sleep(3) #Yemeğin Pişme Süresi
+        #random.uniform(1, 2)
         print(f"Chef-{self.id} finished preparing the order for Customer{customer_id}.")
         cashier = random.choice(restaurant.cashiers)
         cashier_thread = threading.Thread(target=cashier.receive_payment(customer_id))
