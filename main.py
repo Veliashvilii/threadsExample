@@ -6,7 +6,6 @@ from queue import Queue, Empty
 
 def createCustomersWithPriority(restaurant):
     customer_num = random.randint(0,10)
-    #customer_queue = Queue()
     customers = []
     i = 0
     for i in range(customer_num):
@@ -14,9 +13,6 @@ def createCustomersWithPriority(restaurant):
         customers.append(customer)
 
     customers.sort(key=lambda x: x.priority, reverse=True)
-
-    #for customer in customers:
-    #   customer_queue.put(customer)
     
     return customers
 
@@ -43,11 +39,11 @@ def createChefs(num_chefs):
     
     return chefs
 
-def createCashiers(num_cashiers):
+def createCashiers(num_cashiers, restaurant):
     cashiers = []
     i = 0
     for i in range(num_cashiers):
-        cashier = Cashier(id=i+1)
+        cashier = Cashier(id=i+1, restaurant=restaurant)
         cashiers.append(cashier)
 
     return cashiers
@@ -71,15 +67,15 @@ class Restaurant:
         self.waiters = [[Waiter(i) for i in range(num_waiters)]]
         self.waiters = createWaiters(num_waiters=num_waiters)
         self.chefs = createChefs(num_chefs=num_chefs)
-        self.cashiers = createCashiers(num_cashiers=num_cashiers)
-
-        #self.customer_counter = GlobalCounter()
+        self.cashiers = createCashiers(num_cashiers=num_cashiers, restaurant=self)
+        self.customer_counter = GlobalCounter()
 
   def start_simulation(self):
         while True:
           newCustomers = createCustomersWithPriority(self)  
           customers = makeOneLine(self.waiting_line, newCustomers)
           self.waiting_line.clear()
+          #total_customers = restaurant.customer_counter.get_next_id()
 
           print("----------------------------------------------")
           for customer in customers:
@@ -128,7 +124,8 @@ class Customer(threading.Thread):
         super().__init__()
         self.restaurant = restaurant
         self.priority = priority
-        self.id = id #restaurant.customer_counter.get_next_id()
+        self.id = id 
+        #total_customer = restaurant.customer_counter.get_next_id()
         self.table_number = None
 
     def run(self):
@@ -183,16 +180,17 @@ class Chef(threading.Thread):
         cashier_thread.join()
 
 class Cashier(threading.Thread):
-    def __init__(self, id):
+    def __init__(self, id, restaurant):
         super().__init__()
         self.id = id
+        self.restaurant = restaurant
 
     def receive_payment(self, customer_id):
+        total_customers = self.restaurant.customer_counter.get_next_id()
         print(f"Cashier-{self.id} received payment from Customer-{customer_id}.")
-        time.sleep(3)  # Simulate payment processing time
+        print(f"Total Customer: {total_customers}")
+        time.sleep(1)  # Simulate payment processing time
         #random.uniform(0.5, 1)
-
-
 
 if __name__ == "__main__":
     restaurant = Restaurant(num_tables=6, num_waiters=3, num_chefs=2, num_cashiers=1)
