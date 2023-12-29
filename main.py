@@ -211,6 +211,7 @@ class Chef(threading.Thread):
         cashier = random.choice(restaurant.cashiers)
         cashier_thread = threading.Thread(target=cashier.receive_payment(customer_id))
         cashier_thread.start()
+        
         cashier_thread.join()
 
 class Cashier(threading.Thread):
